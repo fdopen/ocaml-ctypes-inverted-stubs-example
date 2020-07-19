@@ -1,51 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <gmp.h>
 #include <caml/callback.h>
 
 #include "xmlm.h"
 
-int depth = 0;
 
-/* Define callbacks for the various XML events that the parser can report.
-   In this simple example we'll ignore everything except start and end tags.
- */
-
-void on_data(char *_) { }
-
-void on_start_tag(char *namespace, char *tag)
+int main(void)
 {
-  printf("%*s%s%s%s\n",
-         depth * 3, "",
-         namespace,
-         strlen(namespace) != 0 ? ":" : "",
-         tag);
-  depth += 1;
-}
+  mpz_t x;
+  mpz_init(x);
+  mpz_set_str(x, "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 10);
 
-void on_end_tag(void) { depth -= 1; }
+  struct x a ;
+  a.z = x;
 
-void on_dtd(char *_) { }
-
-void on_error(int l, int c, char *p)
-{
-  fprintf(stderr, "error: %s at <%d:%d>\n", p, l, c);
-  exit(EXIT_FAILURE);
-} 
-
-int main(int argc, char **argv)
-{
-  struct handlers h = {
-    on_data,
-    on_start_tag,
-    on_end_tag,
-    on_dtd,
-    on_error
-  };
-  char *filename = argc < 2 ? "/dev/stdin" : argv[1];
-
-  /* Call xmlm via the exported C function */
-  parse_xml(&h, filename);
+  ocaml_print(&a);
   return EXIT_SUCCESS;
 }
